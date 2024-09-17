@@ -1,0 +1,54 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using NewsSite.Models.ViewModels
+@using System.Security.Claims
+@inject UserManager<User> userManager
+@{
+    ViewData["Title"] = "Профил";
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var user = await userManager.FindByIdAsync(userId);
+}
+@model SettingsVM
+<h2>Здравейте, @user.FirstName @user.LastName</h2>
+
+<div>
+    <h3>Сменете страницата от бутонито по-долу</h3>
+    <hr />
+    <div class="row">
+        <div class="col-md-3">
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("Profile", "Account",new { section = "profile"})">Профил</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("Profile", "Account", new { section = "changePassword" })">Смяна на паролата</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("Profile", "Account", new { section = "savedNews" })">Запазени новини</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-md-9">
+            <div id="content-area">
+                @if (Model.Section == "profile")
+                {
+                    @await Html.PartialAsync("_SettingsPartial", Model)
+                }
+                else if (Model.Section == "changePassword")
+                {
+                    @await Html.PartialAsync("_ChangePasswordPartial", Model)
+                }
+                else if(Model.Section == "savedNews")
+                {
+                    @await Html.PartialAsync("_SavedNewsPartial", Model)
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script href="~/Scripts/jquery.unobtrusive*"></script>
+    <script href="~/Scripts/jquery.validate*"></script>
+
+}

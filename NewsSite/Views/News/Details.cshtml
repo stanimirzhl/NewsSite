@@ -1,0 +1,227 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@using static NewsSite.Enums.Enumerators
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> userManager
+@model NewsSite.Models.ViewModels.NewsDetailsVM
+@{
+    ViewData["Title"] = $"{Model.News.Title}";
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var user = await userManager.FindByIdAsync(userId);
+}
+@if (TempData["AddedComment"] != null)
+{
+    <div class="alert alert-success">
+        <i class="bi bi-check2-circle"></i> @TempData["AddedComment"]
+    </div>
+}
+<div class="container mt-5">
+    <div class="card border-0 shadow border-top border-5 rounded">
+        <div class="card-body">
+            <div class="card text-white">
+                <img src="@Model.News.MainImage" class="card-img" alt="@Model.News.Title" style=" height: auto;">
+                <div class="card-img-overlay d-flex flex-column justify-content-end">
+                    <h1 class="card-title bg-dark bg-opacity-75 p-3 rounded">@Model.News.Title</h1>
+                    <h4 class="card-text bg-dark bg-opacity-75 p-3 rounded">@Model.News.Introduction</h4>
+                </div>
+            </div>
+            <div class="p-xxl-3">
+                <p class="card-subtitle mb-2 text-muted" style="display: inline;">
+                    @Model.News.PublishedDate.ToString("HH:mm | dd MMMM yyyy", new System.Globalization.CultureInfo("bg-BG")) | Автор:@if (Model.News.Author != null)
+                    {
+                        <strong> @Model.News.Author.FirstName @Model.News.Author.LastName</strong>
+                    }  <i class="bi bi-chat-dots" style="font-size: 0.85em; margin-left: 10px;"></i>@Model.News.Comments.Count(x => x.Status == CommentsStatus.Approved)
+                </p>
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    var userReaction = Model.News.Reactions
+                    .FirstOrDefault(x => x.UserId == userId)?.IsLiked;
+                    <form asp-action="React" method="post" style="display:inline;">
+                        <input type="hidden" name="newsId" value="@Model.News.Id" />
+                        <button type="submit" name="isLike" value="true" class="btn btn-outline-success border-0 small" @(userReaction == true ? "disabled" : "")>
+                            @Model.News.Reactions.Count(x => x.IsLiked == true)👍
+                        </button>
+                        <button type="submit" name="isLike" value="false" class="btn btn-outline-danger border-0 small" @(userReaction == false ? "disabled" : "")>
+                            @Model.News.Reactions.Count(x => x.IsLiked == false)👎
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="React" method="post" style="display:inline;">
+                        <input type="hidden" name="newsId" value="@Model.News.Id" />
+                        <a href="@Url.Action("Login", "Account", new { ReturnUrl = Url.Action("Details", "News", new { id = Model.News.Id }) })" name="isLike" value="true" class="btn btn-outline-success border-0 small">
+                            @Model.News.Reactions.Count(x => x.IsLiked == true)👍
+                        </a>
+                        <a href="@Url.Action("Login", "Account", new { ReturnUrl = Url.Action("Details", "News", new { id = Model.News.Id }) })" name="isLike" value="false" class="btn btn-outline-danger border-0 small">
+                            @Model.News.Reactions.Count(x => x.IsLiked == false)👎
+                        </a>
+                    </form>
+                }
+                @if (!SignInManager.IsSignedIn(User))
+                {
+                    <ng-form style="display:inline; float: right;">
+                        <a href="@Url.Action("Login", "Account", new { ReturnUrl = Url.Action("Details", "News", new { id = Model.News.Id }) })"><i class="bi bi-bookmark"></i></a>
+                    </ng-form>
+                }
+                else
+                {
+                    if (user.SavedNews.Contains(Model.News))
+                    {
+                        <form asp-action="SaveNews" style="display:inline; float: right;">
+                            <input type="hidden" name="newsId" value="@Model.News.Id" />
+                            <button type="submit" class="btn"><i class="bi bi-bookmark-fill"></i></button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="SaveNews" style="display:inline; float: right;">
+                            <input type="hidden" name="newsId" value="@Model.News.Id" />
+                            <button type="submit" class="btn"><i class="bi bi-bookmark"></i></button>
+                        </form>
+
+                    }
+                }
+
+                <p class="card-text">@Model.News.Description</p>
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <form asp-action="AddComment" method="post">
+                        <input type="hidden" name="NewsId" value="@Model.News.Id" />
+                        <div class="container mt-5">
+                            <div class="row">
+                                <div class="col-md-6 card card-body mt-3 p-3 border-0 shadow-sm bg-body-tertiary">
+                                    <div class="form-group">
+                                        <label for="commentTitle">Добавете заглавие:</label>
+                                        <input class="form-control" id="commentTitle" name="title" required />
+                                        <label for="commentTextarea">Добавете текст:</label>
+                                        <textarea class="form-control" id="commentTextarea" name="content" rows="3" required></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-2">Добави коментар</button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="AddComment" method="post">
+                        <input type="hidden" name="NewsId" value="@Model.News.Id" />
+                        <div class="container mt-5">
+                            <div class="row">
+                                <div class="col-md-6 card card-body mt-3 p-3 border-0 shadow-sm bg-body-tertiary">
+                                    <div class="form-group">
+                                        <label for="commentTitle">Добавете заглавие:</label>
+                                        <input class="form-control" id="commentTitle" name="title" disabled />
+                                        <label for="commentTextarea">Добавете текст:</label>
+                                        <textarea class="form-control" id="commentTextarea" name="content" rows="3" disabled></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="@Url.Action("Login", "Account", new { ReturnUrl = Url.Action("Details", "News", new { id = Model.News.Id }) })" class="btn btn-primary">Влезте в профила си,за да добавите коментар</a>
+                    </form>
+                }
+
+            </div>
+        </div>
+    </div>
+    <div class="mt-2">
+        <h4>Коментари</h4>
+        @if (Model.PagedComments.Any())
+        {
+            @foreach (var comment in Model.PagedComments)
+            {
+                <div class="card mb-2">
+                    <div class="card-body">
+                        @if (comment.Author != null)
+                        {
+                            <p class="card-text"><strong>Автор:</strong> @comment.Author.UserName</p>
+                        }
+                        else
+                        {
+                            <p class="card-text"><strong>Автор:</strong> Изтрит потребител</p>
+                        }
+                        <h6 class="card-subtitle mb-2 text-muted">Публикуван на: @comment.DateTime.ToString("MMMM dd, yyyy", new System.Globalization.CultureInfo("bg-BG"))</h6>
+                        <h6 class="card-text"><strong>@comment.Title</strong></h6>
+                        <p class="card-text">@comment.Content</p>
+                        @* <button class="btn btn-sm btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#replyForm-@comment.Id" aria-expanded="false" aria-controls="replyForm-@comment.Id">
+                Отговори
+                </button>
+                @if (SignInManager.IsSignedIn(User))
+                {
+                <div class="collapse multi-collapse" id="replyForm-@comment.Id">
+                <div class="card card-body mt-3 p-3 border-0 shadow-sm">
+                <form asp-action="AddComment" method="post">
+                <input type="hidden" name="NewsId" value="@Model.Id" />
+                <input type="hidden" name="ParentCommentId" value="@comment.Id" />
+                <div class="form-group">
+                <input class="form-control" name="title" required placeholder="Заглавие на коментара:" />
+                <textarea class="form-control" name="Content" rows="2" required placeholder="Съдържание:"></textarea>
+                </div>
+                <button class="btn btn-primary">Отговор</button>
+                </form>
+                </div>
+                </div>
+                }
+                else{
+                <div class="collapse multi-collapse" id="replyForm-@comment.Id">
+                <div class="card card-body mt-3 p-3 border-0 shadow-sm">
+                <form asp-action="AddComment" method="post">
+                <input type="hidden" name="NewsId" value="@Model.Id" />
+                <input type="hidden" name="ParentCommentId" value="@comment.Id" />
+                <div class="form-group">
+                <input class="form-control" name="title" disabled placeholder="Заглавие на коментара:" />
+                <textarea class="form-control" name="Content" rows="2" disabled placeholder="Съдържание:"></textarea>
+                </div>
+                <a href="@Url.Action("Login", "Account", new { ReturnUrl = Url.Action("Details", "News", new { id = Model.Id }) })" class="btn btn-primary">Влезте в профила си,за да добавите коментар</a>
+                </form>
+                </div>
+                </div>
+                }
+                @if (comment.Replies.Any(x => x.Status == CommentsStatus.Approved))
+                {
+                <div class="mt-3">
+                @foreach (var reply in comment.Replies.Where(x => x.Status == CommentsStatus.Approved))
+                {
+                <div class="card mb-2">
+                <div class="card-body">
+                <p class="card-text"><strong>Автор:</strong> @reply.Author.UserName</p>
+                <h6 class="card-subtitle mb-2 text-muted">Публикуван на: @reply.DateTime.ToString("MMMM dd, yyyy", new System.Globalization.CultureInfo("bg-BG"))</h6>
+                <h6 class="card-text"><strong>@comment.Title</strong></h6>
+                <p class="card-text">@reply.Content</p>
+                </div>
+                </div>
+                }
+                </div>
+                } *@
+                    </div>
+                </div>
+            }
+
+            <nav aria-label="Page navigation">
+                @{
+                    var prevDisabled = !Model.PagedComments.HasPreviousPage ? "disabled" : "";
+                    var nextDisabled = !Model.PagedComments.HasNextPage ? "disabled" : "";
+                }
+                <div class="d-flex justify-content-center align-items-center my-4">
+                    <a href="@Url.Action("Details", new { id = Model.News.Id, pageNumber = Model.PagedComments.PageIndex - 1})" class="btn btn-secondary rounded @prevDisabled" @(prevDisabled) onsubmit="return false">
+                        <i class="bi bi-chevron-left"></i> Предишна
+                    </a>
+                    <span class="badge bg-secondary fs-6 px-3 py-2 mx-1 rounded-pill" aria-live="polite">
+                        @Model.PagedComments.PageIndex
+                    </span>
+                    <a href="@Url.Action("Details", new { id = Model.News.Id, pageNumber = Model.PagedComments.PageIndex + 1})" class="btn btn-secondary rounded @nextDisabled" @(nextDisabled) onsubmit="return false">
+                        Следваща <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>
+
+
+            </nav>
+        }
+        else
+        {
+            <p>Няма коментари.</p>
+        }
+    </div>
+</div>

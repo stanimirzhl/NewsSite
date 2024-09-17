@@ -1,0 +1,65 @@
+﻿@using NewsSite.Models.ViewModels
+@{
+    ViewData["Title"] = "Изтриване на новина";
+}
+@model NewsVM
+<div class="card shadow border-0 mt-4">
+    <div class="card-header bg-primary bg-gradient ml-0 py-3 rounded">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Изтрииване на новина</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body p-4">
+        <form asp-action="Delete" enctype="multipart/form-data" method="post" class="row">
+            <div class="row ">
+                <div class="col-10">
+                    <div class="border p-3">
+                        <div class="form-floating py-2 col-12">
+                            <label asp-for="Title" class="col-form-label p-lg-2">Заглавие:</label>
+                            <input asp-for="Title" type="text" class="form-control border-0 shadow" disabled/>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <label asp-for="Introduction" class="col-form-label p-lg-2">Въведение:</label>
+                            <textarea asp-for="Introduction" class="form-control border-0 shadow" disabled></textarea>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <label asp-for="MainImage" class="col-form-label p-1">Начална Снимка:</label>
+                            <input type="file" name="mainImage" class="form-control border-0 shadow" accept="image/*" onchange="previewImage(event,'MainImagePreview')" disabled/>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <label asp-for="Description" class="col-form-label p-lg-2">Съдържание:</label>
+                            <textarea asp-for="Description" class="form-control border-0 shadow" disabled></textarea>
+                        </div>
+
+                        <div class="form-floating py-2 col-12">
+                            <label asp-for="AdditionalImages" class="col-form-label p-1">Допълнителни снимки:</label>
+                            <input type="file" name="files" class="form-control border-0 shadow" accept="image/*" onchange="previewImages(event, 'SecondaryImagePreview')" multiple disabled/>
+                        </div>
+                        <div class="form-floating py-3 col-12">
+                            <label asp-for="CategoryId" class="form-label">Категории</label>
+                            <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select border-0 shadow" disabled>
+                                <option value="0">Изберете категория</option>
+                            </select>
+                        </div>
+                        <button asp-controller="News" asp-action="Delete" type="submit" class="btn btn-danger p-2 rounded-start">Изтрий</button>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary p-2 rounded-end">Върни се обратно</a>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <img src="@Model.MainImage" width="100%" style="border-radius:5px; border:1px solid #bbb9b9" />
+                    @if (Model.AdditionalImages.Any())
+                    {
+                        @foreach (var img in Model.AdditionalImages)
+                        {
+                            <img src="@img" width="100%" style="border-radius:5px; border:1px solid #bbb9b9" />
+                        }
+                    }
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>

@@ -1,0 +1,112 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using NewsSite.Models.Pagination
+@using static NewsSite.Enums.Enumerators
+@model PagingModel<User>
+@inject UserManager<User> UserManager
+@{
+    ViewData["Title"] = "Потребители";
+}
+
+@if (!Model.Any())
+{
+    <h1>
+        Няма налични потребители
+    </h1>
+}
+else
+{
+    <h1 class="text-primary">Потребители</h1>
+    <table class="table table-bordered table-hover table-responsive">
+        <thead>
+            <tr>
+                <th>Потребителско име</th>
+                <th>Електронна поща</th>
+                <th>Име</th>
+                <th>Фамилия</th>
+                <th>Роли</th>
+                @if (User.IsInRole("Администратор"))
+                {
+                    <th>Бутони за управление</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.UserName</td>
+                    <td>@user.Email</td>
+                    <td>@user.FirstName</td>
+                    <td>@user.LastName</td>
+                    <td>
+                        @foreach (var role in await UserManager.GetRolesAsync(user))
+                        {
+                            <span class="badge bg-info">@role</span>
+                        }
+                    </td>
+
+                    @if (User.IsInRole("Администратор"))
+                    {
+
+                        @if (user.Status == UserStatus.Pending && !await UserManager.IsInRoleAsync(user, "Потребител"))
+                        {
+                            <td>
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <form asp-action="Approve">
+                                        <input hidden name="userId" value="@user.Id" />
+                                        <button class="btn btn-success btn-sm mt-2" asp-action="Approve" asp-controller="Users"><i class="bi bi-check-lg"></i></button>
+                                    </form>
+                                    <form asp-action="Reject">
+                                        <input hidden name="userId" value="@user.Id" />
+                                        <button class="btn btn-danger btn-sm mt-2" asp-action="Reject" asp-controller="Users"><i class="bi bi-x-lg"></i></button>
+                                    </form>
+                                </div>
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                <a asp-controller="Users" asp-action="Edit" class="btn btn-outline-info" asp-route-id="@user.Id"><i class="bi bi-pencil-square"></i>Редактирай</a>
+                                <form asp-controller="Users" asp-action="Delete" asp-route-id="@user.Id">
+                                    <input hidden name="userId" value="@user.Id" />
+                                    <button class="btn btn-outline-danger" type="submit"><i class="bi bi-x-circle"></i>Изтрий</button>
+                                </form>
+                            </td>
+
+                        }
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@if (User.IsInRole("Администратор"))
+{
+    <div class="container-md">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary form-control">Върни се обратно</a>
+        <a asp-controller="Users" asp-action="Create">
+            <button class="btn btn-outline-success form-control">
+                <i class="bi bi-plus-circle"></i> Добави потребител
+            </button>
+        </a>
+    </div>
+}
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+@if (Model.Any())
+{
+    <div class="d-flex justify-content-center align-items-center my-4">
+        <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)" class="btn btn-secondary rounded @prevDisabled">
+            <i class="bi bi-chevron-left"></i>Предишна
+        </a>
+        <span class="badge bg-secondary fs-6 px-3 py-2 mx-1 rounded-pill" aria-live="polite">
+            @Model.PageIndex
+        </span>
+        <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)" class="btn btn-secondary rounded @nextDisabled">
+            Следваща<i class="bi bi-chevron-right"></i>
+        </a>
+    </div>
+}
+

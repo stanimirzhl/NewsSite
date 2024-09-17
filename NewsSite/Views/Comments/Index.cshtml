@@ -1,0 +1,40 @@
+﻿@model List<Comments>
+
+<div class="mt-4">
+    <h4>Коментари</h4>
+    @if (Model.Any())
+    {
+        @foreach (var comment in Model)
+        {
+            <div class="card mb-3 shadow-sm">
+                
+                <div class="card-body">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <form asp-action="Approve">
+                            <input hidden name="commentId" value="@comment.Id" />
+                            <button class="btn btn-success btn-sm mt-2" asp-action="Approve" asp-controller="Comments"><i class="bi bi-check-lg"></i></button>
+                        </form>
+                        <form asp-action="Reject">
+                            <input hidden name="commentId" value="@comment.Id" />
+                            <button class="btn btn-danger btn-sm mt-2" asp-action="Reject" asp-controller="Comments"><i class="bi bi-x-lg"></i></button>
+                        </form>
+                    </div>
+                    <p class="card-text">
+                        <strong>Автор:</strong> @comment.Author.UserName
+                    </p>
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        Публикуван на: @comment.DateTime.ToString("MMMM dd, yyyy", new System.Globalization.CultureInfo("bg-BG"))
+                    </h6>
+                    <h6 class="card-text"><strong>@comment.Title</strong></h6>
+                    
+                    <p class="card-text">@comment.Content</p>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>Няма коментари, чакащи одобрение</p>
+    }
+</div>
+

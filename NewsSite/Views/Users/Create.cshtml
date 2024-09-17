@@ -1,0 +1,83 @@
+﻿@using NewsSite.Models.ViewModels
+@{
+    ViewData["Title"] = "Създаване на нов потребител";
+}
+@model RegisterVM
+<div class="row justify-content-center">
+    <div class="col-xl-5 col-lg-6 col-md-8 col-sm-10">
+        <form id="registerForm" method="post" class="p-4 shadow rounded" asp-action="Create" asp-controller="Users">
+            <h2>Създай нов потребител</h2>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="@Model.Email" class="form-label">Елекронна поща</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                    <input asp-for="@Model.Email" class="form-control" autocomplete="email" aria-required="true" />
+                </div>
+                <span asp-validation-for="@Model.Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="@Model.UserName" class="form-label">Потребителско име</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                    <input asp-for="@Model.UserName" class="form-control" autocomplete="username" aria-required="true" />
+                </div>
+                <span asp-validation-for="@Model.UserName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="@Model.FirstName" class="form-label">Име</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                    <input asp-for="@Model.FirstName" class="form-control" autocomplete="given-name" aria-required="true" />
+                </div>
+                <span asp-validation-for="@Model.FirstName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="@Model.LastName" class="form-label">Фамилия</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                    <input asp-for="@Model.LastName" class="form-control" autocomplete="family-name" aria-required="true" />
+                </div>
+                <span asp-validation-for="@Model.LastName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="@Model.Password" class="form-label">Парола</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                    <input asp-for="@Model.Password" type="password" class="form-control" autocomplete="new-password" aria-required="true" />
+                </div>
+                <span asp-validation-for="@Model.Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="@Model.ConfirmPassword" class="form-label">Потвърдете паролата</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                    <input asp-for="@Model.ConfirmPassword" type="password" class="form-control" autocomplete="new-password" aria-required="true" />
+                </div>
+                <span asp-validation-for="@Model.ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label for="selectedRoles">Роли:</label>
+                <select id="selectedRoles" name="SelectedRoles" class="form-control" multiple>
+                    @foreach (var role in ViewBag.Roles as List<SelectListItem>)
+                    {
+                        <option value="@role.Value">@role.Text</option>
+                    }
+                </select>
+            </div>
+                <button type="submit" class="w-100 btn btn-lg btn-primary">Създай</button>
+                <a asp-action="Index" asp-controller="Users" class="w-100 btn btn-lg btn-secondary">Върни се обратно</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

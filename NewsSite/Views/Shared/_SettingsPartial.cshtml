@@ -1,0 +1,54 @@
+﻿@using NewsSite.Models.ViewModels
+<h2>Данни</h2>
+@model SettingsVM
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-primary mb-4">
+        @TempData["Success"]
+    </div>
+}
+<div class="row m-4">
+    <div class="col-xl-5 col-lg-6 col-md-8 col-sm-10">
+        <form asp-action="UpdateProfile" method="post" class="p-4 shadow rounded">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+            <div class="form-group mb-3">
+                <label asp-for="@Model.ProfileSettings.UserName" class="form-label">Потребителско име:</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                    <input asp-for="@Model.ProfileSettings.UserName" class="form-control" aria-required="true" />
+                    <span asp-validation-for="@Model.ProfileSettings.UserName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="@Model.ProfileSettings.FirstName" class="form-label">Име:</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                    <input asp-for="@Model.ProfileSettings.FirstName" class="form-control" aria-required="true" />
+                    <span asp-validation-for="@Model.ProfileSettings.FirstName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="@Model.ProfileSettings.LastName" class="form-label">Фамилия:</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                    <input asp-for="@Model.ProfileSettings.LastName" class="form-control" aria-required="true" />
+                    <span asp-validation-for="@Model.ProfileSettings.LastName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="@Model.ProfileSettings.Email" class="form-label">Елекронна поща:</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                    <input asp-for="@Model.ProfileSettings.Email" class="form-control" aria-required="true" />
+                    <span asp-validation-for="@Model.ProfileSettings.Email" class="text-danger"></span>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" href="@Url.Action("Profile", "Account", new {section = Model.Section})">Запазване на промените</button>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script href="~/Scripts/jquery.unobtrusive*"></script>
+    <script href="~/Scripts/jquery.validate*"></script>
+}

@@ -1,0 +1,40 @@
+﻿@using NewsSite.Models.ViewModels
+@model SettingsVM
+@if (Model.SavedNews.Any())
+{
+    <div class="container">
+        <div class="row">
+            @foreach (var news in Model.SavedNews)
+            {
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="card border-0 shadow border-top border-5 rounded">
+                        <img src="@news.MainImage" class="card-img-top rounded" alt="News Image" />
+                        <div class="card-body">
+                            <h5 class="card-title text-dark opacity-75 text-uppercase text-center">@news.Title</h5>
+                            <p class="card-text text-dark opacity-75 text-center">@news.Introduction</p>
+                            <p class="text-dark-emphasis opacity-75 text-center">
+                                @news.PublishedDate.ToString("HH:mm | dd.MM.yy")
+                            </p>
+                            @if (User.IsInRole("Редактор"))
+                            {
+                                <div class="btn-group-vertical">
+                                    <a asp-controller="News" asp-action="Details" asp-route-id="@news.Id" class="btn btn-outline-primary bg-gradient border-0 rounded">Подробно</a>
+                                    <a asp-controller="News" asp-action="Edit" asp-route-id="@news.Id" class="btn btn-outline-warning bg-gradient border-0 rounded">Редактирай</a>
+                                    <a asp-controller="News" asp-action="Delete" asp-route-id="@news.Id" class="btn btn-outline-danger bg-gradient border-0 rounded">Изтрий</a>
+                                </div>
+                            }
+                            else
+                            {
+                                <a asp-controller="News" asp-action="Details" asp-route-id="@news.Id" class="btn btn-outline-primary bg-gradient border-0 rounded mt-2">Подробно</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <h1>Няма запазени новини</h1>
+}

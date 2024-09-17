@@ -1,0 +1,44 @@
+﻿@using NewsSite.Models.ViewModels
+@model LoginVM
+
+@{
+    ViewData["Title"] = "Вход";
+}
+
+<div class="row justify-content-center">
+    <div class="col-xl-5 col-lg-6 col-md-8 col-sm-10">
+        <form id="registerForm" method="post" class="p-4 shadow rounded" asp-action="Login" asp-controller="Account">
+            <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+            <h2 class="text-center">Вход в системата</h2>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="UserName" class="form-label">Потребителско име</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                    <input asp-for="UserName" class="form-control" autocomplete="username" aria-required="true" />
+                </div>
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Password" class="form-label">Парола</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                    <input asp-for="Password" type="password" class="form-control" autocomplete="current-password" aria-required="true" />
+                </div>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <small>
+                Нямате акаунт? <a asp-controller="Account" asp-action="Register" style="text-decoration: none">Регистрирайте се сега!</a>
+            </small>
+            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Вход</button>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

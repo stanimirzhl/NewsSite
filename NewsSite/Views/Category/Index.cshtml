@@ -1,0 +1,111 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using NewsSite.Models.Pagination
+@using System.Security.Claims
+@inject UserManager<User> userManager
+@model PagingModel<Category>
+@{
+    ViewData["Title"] = "Категории";
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var user = await userManager.FindByIdAsync(userId);
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        <i class="bi bi-check2-circle"></i> @TempData["Success"]
+    </div>
+}
+@if (!Model.Any())
+{
+    <h1>
+        Няма налични категории
+    </h1>
+}
+else
+{
+    <h1 class="text-primary">Категории</h1>
+    <table class="table table-bordered table-hover table-responsive">
+        <thead>
+
+            <tr>
+                <th>Име</th>
+                <th>Описание</th>
+                <th>Следвай категория</th>
+                @if (User.IsInRole("Редактор"))
+                {
+                    <th>Бутони за управление</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+
+                @foreach (var category in Model)
+                {
+                    <tr>
+                        <td>@category.Name</td>
+                        <td>@category.Description</td>
+                        <td>
+                            <form method="post" asp-action="SubscribeToCategory" asp-controller="Category">
+                                <input type="hidden" name="categoryId" value="@category.Id" />
+                                <button type="submit" class="btn btn-primary">
+                                    @if (!user.SubscribedCategories.Contains(category))
+                                    {
+
+                                        <a ><i class="bi bi-plus-circle"></i> Абонирай се</a>
+                                    }
+                                    else
+                                    {
+                                        <a> <i class="bi bi-x-circle"></i> Отбонирай се</a>
+                                    }
+                                </button>
+                            </form>
+                           
+                            
+                        </td>
+                        @if (User.IsInRole("Редактор"))
+                        {
+                            <td>
+                                <a asp-controller="Category" asp-action="Edit" class="btn btn-outline-info" asp-route-id="@category.Id"><i class="bi bi-pencil-square"></i>Редактирай</a>
+                                <a asp-controller="Category" asp-action="Delete" class="btn btn-outline-danger" asp-route-id="@category.Id"><i class="bi bi-x-circle"></i>Изтрий</a>
+                            </td>
+                        }
+                    </tr>
+                }
+            }
+
+        </tbody>
+
+    </table>
+}
+<div class="container-md">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary form-control md-2">Върни се обратно</a>
+    @if (User.IsInRole("Редактор"))
+    {
+        <a asp-controller="Category" asp-action="Create">
+            <button class="add-news-btn" class="btn btn-outline-success">
+
+                <i class="bi bi-plus-circle"></i> Добави категория
+
+            </button>
+        </a>
+    }
+</div>
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+@if (Model.Any())
+{
+    <div class="d-flex justify-content-center align-items-center my-4">
+        <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)" class="btn btn-secondary rounded @prevDisabled">
+            <i class="bi bi-chevron-left"></i>Предишна
+        </a>
+        <span class="badge bg-secondary fs-6 px-3 py-2 mx-1 rounded-pill" aria-live="polite">
+            @Model.PageIndex
+        </span>
+        <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)" class="btn btn-secondary rounded @nextDisabled">
+            Следваща<i class="bi bi-chevron-right"></i>
+        </a>
+    </div>
+}

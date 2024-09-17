@@ -1,0 +1,31 @@
+﻿@using NewsSite.Models.ViewModels
+@{
+    ViewData["Title"] = "Изтриване на категория";
+}
+@model CategoryVM
+
+<div class="card shadow border-0 mt-4">
+    <div class="card-header bg-primary bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Изтрий категория</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <form asp-action="Delete" enctype="multipart/form-data" method="post" class="row">
+            <div class="border p-3">
+                <div class="form-floating py-2 col-12">
+                    <label asp-for="Name" class="col-form-label p-lg-2">Заглавие:</label>
+                    <input type="text" asp-for="Name" class="form-control border-0 shadow" disabled/>
+                </div>
+                <div class="form-floating py-2 col-12">
+                    <label asp-for="Description" class="col-form-label p-lg-2">Описание:</label>
+                    <textarea asp-for="Description" class="form-control border-0 shadow" disabled></textarea>
+                </div>
+                <button asp-controller="Category" asp-action="Delete" class="btn btn-primary">Изтрий</button>
+                <button asp-controller="Category" asp-action="Index" class="btn btn-secondary">Върни се обратно</button>
+            </div>
+        </form>
+    </div>
+</div>

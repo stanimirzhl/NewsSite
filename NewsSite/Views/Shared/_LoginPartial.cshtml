@@ -1,0 +1,58 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item dropdown">
+            <a class="btn btn-primary dropdown-toggle text-dark" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Профил
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile" asp-route-userId="@UserManager.GetUserId(User)">Моят профил</a></li>
+                @if (User.IsInRole("Модератор"))
+                {
+                    <li><a class="dropdown-item" asp-controller="Comments" asp-action="Index">Коментари</a></li>
+                }
+                <li><a class="dropdown-item" asp-controller="Category" asp-action="Index">Категории</a></li>
+                <li><a class="dropdown-item" asp-controller="Users" asp-action="Index">Потребители</a></li>
+                <li>
+                    <a>
+                        <button class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                            <i class="bi bi-box-arrow-right"></i> Изход
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="logoutModalLabel"><i class="bi bi-box-arrow-right"></i> Изход</h5>
+                        <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Сигурни ли сте, че искате да излезете от системата?
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмени</button>
+                        <form class="d-inline" asp-controller="Account" asp-action="Logout">
+                            <button type="submit" class="btn btn-outline-danger">Излез</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Регистриране</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Вход</a>
+        </li>
+    }
+</ul>
