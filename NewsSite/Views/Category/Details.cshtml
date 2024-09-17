@@ -31,13 +31,14 @@
                             <p class="text-dark-emphasis opacity-75 card-text text-center">@news.PublishedDate.ToString("HH:mm | dd.MM.yy") от <b>@news.Author</b></p>
                         </div>
                         <div class="d-flex justify-content-between align-items-center p-2">
-                            <a asp-controller="News" asp-action="Details" asp-route-id="@news.Id" class="btn btn-outline-primary bg-gradient border-0 rounded">Подробно</a>
                             @if (User.IsInRole("Редактор"))
                             {
+                                <a asp-controller="News" asp-action="Details" asp-route-id="@news.Id" class="btn btn-outline-primary bg-gradient border-0 rounded">Подробно</a>
                                 <a asp-controller="News" asp-action="Edit" asp-route-id="@news.Id" class="btn btn-outline-warning bg-gradient border-0 rounded">Редактирай</a>
                                 <a asp-controller="News" asp-action="Delete" asp-route-id="@news.Id" type="submit" class="btn btn-outline-danger bg-gradient border-0 rounded">Изтрий</a>
                             }
                         </div>
+                        <a asp-controller="News" asp-action="Details" asp-route-id="@news.Id" class="btn btn-outline-primary bg-gradient border-0 rounded">Подробно</a>
                     </div>
                 </div>
             </div>

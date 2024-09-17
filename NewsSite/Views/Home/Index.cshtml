@@ -1,8 +1,105 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using NewsSite.Models.Pagination
+@using NewsSite.Services
+@{
+    ViewData["Title"] = "Начало";
 }
+@model PagingModel<News>
+@inject CategoryService service
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="row pb-3">
+
+    @{
+        var selectedCategoryId = ViewBag.SelectedCategoryId as int?;
+    }
+    <div class="row pb-3">
+        <div class="col-md-4 col-lg-2">
+            <form asp-action="Index" method="get">
+                <div class="form-group">
+                    <label for="categoryId">Изберете категория:</label>
+                    <select id="categoryId" name="categoryId" class="form-control" onchange="this.form.submit()">
+                        <option value="">Всички новини</option>
+                        @foreach (var category in service.GetAllCategories())
+                        {
+                            <!option value="@category.Id" @(category.Id == selectedCategoryId ? "selected" : "")>
+                                @category.Name
+                            </!option>
+                        }
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-8 col-lg-9 p-4">
+            <form asp-action="Index" method="get" class="d-flex">
+                <input name="term" class="form-control me-2" placeholder="Търсете по ключова дума или израз" />
+                <button type="submit" class="btn btn-outline-info">Търси</button>
+            </form>
+        </div>
+    </div>
+    @foreach (var news in Model.OrderByDescending(x => x.PublishedDate))
+    {
+        <div class="col-lg-3 col-sm-6">
+            <div class="row p-2">
+                <div class="col-12 p-1">
+                    <div class="card border-0 shadow border-top border-5 rounded">
+                        <img src="@news.MainImage" class="card-img-top rounded" />
+                        <div class="pl-1">
+                            <p class="card-title h5 text-dark opacity-75 text-uppercase text-center">@news.Title</p>
+                        </div>
+                        <div class="pl-1">
+                            <p class="text-dark opacity-75 text-uppercase text-center">@news.Introduction</p>
+                        </div>
+                        <div class="pl-1">
+                            <p class="text-dark-emphasis opacity-75 card-text text-center">
+                                @news.PublishedDate.ToString("HH:mm | dd.MM.yy") от @if (news.Author != null)
+                                {
+                                    <b>@news.Author</b>
+                                }
+                            </p>
+                        </div>
+                        @if (User.IsInRole("Редактор"))
+                        {
+                            <div class="d-flex justify-content-between align-items-center p-2">
+                                <a asp-controller="News" asp-action="Details" asp-route-id="@news.Id" class="btn btn-outline-primary bg-gradient border-0 rounded">Подробно</a>
+                                <a asp-controller="News" asp-action="Edit" asp-route-id="@news.Id" class="btn btn-outline-warning bg-gradient border-0 rounded">Редактирай</a>
+                                <a asp-controller="News" asp-action="Delete" asp-route-id="@news.Id" type="submit" class="btn btn-outline-danger bg-gradient border-0 rounded">Изтрий</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <a asp-controller="News" asp-action="Details" asp-route-id="@news.Id" class="btn btn-outline-primary bg-gradient border-0 rounded">Подробно</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
 </div>
+@if (User.IsInRole("Редактор"))
+{
+    <a asp-controller="News" asp-action="Create">
+        <button class="add-news-btn" class="btn btn-outline-success">
+
+            <i class="bi bi-plus-circle"></i> Добави новина
+
+        </button>
+    </a>
+}
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+@if (Model.Any())
+{
+    <div class="d-flex justify-content-center align-items-center my-4">
+        <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)" class="btn btn-secondary rounded @prevDisabled">
+            <i class="bi bi-chevron-left"></i>Предишна
+        </a>
+        <span class="badge bg-secondary fs-6 px-3 py-2 mx-1 rounded-pill" aria-live="polite">
+            @Model.PageIndex
+        </span>
+        <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)" class="btn btn-secondary rounded @nextDisabled">
+            <i class="bi bi-chevron-right"></i>Следваща
+        </a>
+    </div>
+}

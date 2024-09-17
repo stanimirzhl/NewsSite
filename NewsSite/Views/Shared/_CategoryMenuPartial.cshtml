@@ -2,18 +2,19 @@
 @{
     var selectedCategoryId = ViewBag.SelectedCategoryId as int?;
 }
-<form asp-action="Index" method="get">
-    <div class="form-group">
-        <label for="categoryId">Изберете категория:</label>
-        <select id="categoryId" name="categoryId" class="form-control" onchange="this.form.submit()">
-            <option value="">Всички новини</option>
-            @foreach (var category in Model)
-            {
-                var isSelected = category.Id == selectedCategoryId ? "selected" : "";
-                <!option value="@category.Id" @(isSelected)>
-                    @category.Name
-                </!option>
-            }
-        </select>
+<form asp-action="Index" method="get" class="row pb-3">
+    <div class="col-md-2">
+        <div class="form-group">
+            <label for="categoryId">Изберете категория:</label>
+            <select id="categoryId" name="categoryId" class="form-control" onchange="this.form.submit()">
+                <option value="">Всички новини</option>
+                @foreach (var category in Model)
+                {
+                    <!option value="@category.Id" @(category.Id == selectedCategoryId ? "selected" : "")>
+                        @category.Name
+                    </!option>
+                }
+            </select>
+        </div>
     </div>
 </form>

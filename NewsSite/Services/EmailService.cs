@@ -3,7 +3,6 @@ using System.Net.Mail;
 using System.Net;
 using NewsSite.EmailSettingsModel;
 using Microsoft.AspNetCore.Hosting.Server;
-using System.Composition;
 
 namespace NewsSite.Services
 {

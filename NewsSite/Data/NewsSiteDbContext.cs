@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NewsSite.Models;
-using Newtonsoft.Json;
 using System.Reflection.Emit;
 
 namespace NewsSite.Data

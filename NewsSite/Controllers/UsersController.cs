@@ -2,11 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using NewsSite.Models;
 using NewsSite.Models.Pagination;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.Drawing.Printing;
 using NewsSite.Models.ViewModels;
 using System.Text.RegularExpressions;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
