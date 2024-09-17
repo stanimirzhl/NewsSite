@@ -23,8 +23,7 @@ builder.Services.AddDefaultIdentity<User>(options =>
     options.SignIn.RequireConfirmedAccount = false;
     options.SignIn.RequireConfirmedEmail = false;
 })
-.AddRoles<IdentityRole>()
-.AddEntityFrameworkStores<NewsSiteDbContext>();
+.AddRoles<IdentityRole>();
 
 builder.Services.AddControllersWithViews();
 
@@ -37,11 +36,22 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 var app = builder.Build();
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        await DbSeeder.SeedDatabase(services, isDevelopment: true);
+    }
+}
+else
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        await DbSeeder.SeedDatabase(services, isDevelopment: false);
+    }
 }
 
 app.UseHttpsRedirection();
